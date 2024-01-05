@@ -10,8 +10,30 @@
 body {
   height: 100vh;
   width: 100vw;
+  overflow: hidden;
 
   background-color: black;
   color: white;
   font-family: 'Seven Segment', sans-serif;
+}
+
+#input {
+  position: relative;
+  left: 5vw;
+  top: 50vh;
+  transform: translate(0, -50%);
+
+  width: max-content;
+
+  font-size: 5rem;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+#cursor {
+  animation: blink 2s steps(2, start) infinite
 }

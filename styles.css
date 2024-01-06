@@ -37,3 +37,30 @@ body {
 #cursor {
   animation: blink 2s steps(2, start) infinite
 }
+
+#parent {
+  position: relative;
+  width: 50vw;
+  height: 5rem;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  border: 1px solid red;
+  vertical-align: middle;
+}
+
+#child {
+  display: flex;
+  flex-direction: column;
+
+
+  position: absolute;
+  width: 100%;
+  font-size: 5rem;
+  
+  transform: translate(0, calc(5rem - 100%));
+}
+
+#child > div {
+  height: 5rem;
+}

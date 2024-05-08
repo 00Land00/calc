@@ -25,13 +25,12 @@ body {
   transform: translate(0, -50%);
 
   font-size: 5rem;
-  border: 1px solid red;
 }
 
 #input {
   display: flex;
   flex-direction: column;
-  gap: 5vh;
+  gap: 1vh;
 
   position: absolute;
   width: 100%;
@@ -40,8 +39,9 @@ body {
   transform: translate(0, calc(5rem - 100%));
 }
 
-#input > div {
+#input div {
   height: 5rem;
+  transition: transform 0.1s;
 }
 
 @keyframes blink {

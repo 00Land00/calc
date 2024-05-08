@@ -7,22 +7,15 @@ const index = (() => {
 
   const validKeys = /[\d\*\+\-\/]/;
   let inputCount = inputText.childElementCount;
-  let curScroll = 1;
+  let childOffset = 1;
 
   const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
-  const scrollToId = (val) => {
-    let scrollVal = val - 1;
-    return inputCount - (scrollVal + 1);
-  };
-
   module.setScroll = (val) => {
-    curScroll = clamp(val, 1, inputCount);
-    let offset = `${curScroll * 5}rem`;
-    offset += ` + ${Math.max(curScroll - 1, 0) * 5}vh`;
+    childOffset = clamp(val, 1, inputCount);
+    let offset = `${childOffset * 5}rem`; // offset by the flex elements
+    offset += ` + ${Math.max(childOffset - 1, 0) * 1}vh`; // include the offset from the gaps
     inputText.style.transform = `translate(0, calc((${offset}) - 100%))`;
-    // curScroll => is how we get the list of 
-    inputText.children[scrollToId(curScroll)].style.backgroundColor = `yellow`;
   };
 
   // module.backspaceCheck = (key) => {
@@ -42,21 +35,16 @@ const index = (() => {
   // };
 
   module.controlsCheck = (key) => {
+    inputText.children[inputCount - childOffset].style.transform = ``;
     if (key === "ArrowUp") {
-      curScroll++;
-      module.setScroll(curScroll);
+      childOffset++;
+      module.setScroll(childOffset);
     }
     if (key === "ArrowDown") {
-      curScroll--;
-      module.setScroll(curScroll);
+      childOffset--;
+      module.setScroll(childOffset);
     }
-  };
-
-  const scrollEH = (e) => {
-    let y = e.deltaY;
-    curScroll += y;
-
-    module.setScroll(curScroll);
+    inputText.children[inputCount - childOffset].style.transform = `translate(3%, 0%) scale(1.1)`;
   };
 
   const typingEH = (e) => {
@@ -66,8 +54,8 @@ const index = (() => {
   };
 
   window.addEventListener("DOMContentLoaded", () => {
+    inputText.children[inputCount - childOffset].style.transform = `translate(3%, 0%) scale(1.1)`;
     window.addEventListener("keydown", typingEH);
-    window.addEventListener("wheel", scrollEH);
   });
 
   return module;
@@ -77,7 +65,6 @@ const index = (() => {
 
 - i want the focus to increase in size and smoothly increase or decrease
   as it enters focus
-- then i have to get the cursor to follow the focus
 - and have it finally add every valid keypress and ensure it doesn't
   break when i update the childCount
 

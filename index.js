@@ -3,59 +3,92 @@ const index = (() => {
 
   const module = {};
 
-  const inputText = document.querySelector("#input");
+  const historyContainer = document.querySelector("#input");
 
   const validKeys = /[\d\*\+\-\/]/;
-  let inputCount = inputText.childElementCount;
-  let childOffset = 1;
+  const cursor = `<span id="cursor">_</span>`;
+
+  let recordCount = historyContainer.childElementCount;
+  let curRecordId = recordCount - 1;
+  let curRecord = historyContainer.children[curRecordId];
+  let curInnerHTML = curRecord.innerHTML;
 
   const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
-  module.setScroll = (val) => {
-    childOffset = clamp(val, 1, inputCount);
-    let offset = `${childOffset * 5}rem`; // offset by the flex elements
-    offset += ` + ${Math.max(childOffset - 1, 0) * 1}vh`; // include the offset from the gaps
-    inputText.style.transform = `translate(0, calc((${offset}) - 100%))`;
+  const scroll = () => {
+    let recordOffset = recordCount - curRecordId;
+    let offset = `${recordOffset * 5}rem`;
+    offset += ` + ${Math.max(recordOffset - 1, 0) * 1}vh`;
+
+    historyContainer.style.transform = `translate(0, calc((${offset}) - 100%))`;
   };
 
-  // module.backspaceCheck = (key) => {
-  //   if (key === "Backspace" && inputText.innerHTML.length > 0) {
-  //     inputText.innerHTML = inputText.innerHTML.substring(
-  //       0,
-  //       inputText.innerHTML.length - 1
-  //     );
-  //   }
-  // };
+  const scrollEH = (key) => {
+    curRecord.style.transform = ``;
+    curRecord.removeChild(curRecord.children[0]);
 
-  // module.validKeyCheck = (key) => {
-  //   if (key.length === 1 && key.match(validKeys)) {
-  //     // i would put the text up here
-  //     inputText.innerHTML += key;
-  //   }
-  // };
-
-  module.controlsCheck = (key) => {
-    inputText.children[inputCount - childOffset].style.transform = ``;
     if (key === "ArrowUp") {
-      childOffset++;
-      module.setScroll(childOffset);
+      curRecordId--;
+    } else if (key === "ArrowDown") {
+      curRecordId++;
     }
-    if (key === "ArrowDown") {
-      childOffset--;
-      module.setScroll(childOffset);
-    }
-    inputText.children[inputCount - childOffset].style.transform = `translate(3%, 0%) scale(1.1)`;
+    curRecordId = clamp(curRecordId, 0, recordCount - 1);
+    scroll();
+    curRecord = historyContainer.children[curRecordId];
+    curInnerHTML = curRecord.innerHTML;
+
+    curRecord.style.transform = `translate(3%, 0%) scale(1.1)`;
+    curRecord.innerHTML += cursor;
   };
 
-  const typingEH = (e) => {
-    // module.validKeyCheck(e.key);
-    // module.backspaceCheck(e.key);
-    module.controlsCheck(e.key);
+  const delBelow = () => {
+    if (curRecordId != recordCount - 1) {
+      const delId = curRecordId + 1;
+      for (let i = delId; i < recordCount; i++) {
+        const record = historyContainer.children[delId];
+        historyContainer.removeChild(record);
+      }
+      recordCount = curRecordId + 1;
+      scrollEH("ArrowDown");
+    }
+  }
+  
+  const keyEH = (key) => {
+    delBelow();
+
+    const copy = document.createElement("div");
+    copy.innerHTML = curInnerHTML + key;
+    historyContainer.appendChild(copy);
+    recordCount++;
+    scrollEH("ArrowDown");
+  };
+
+  const delEH = () => {
+    delBelow();
+
+    const copy = document.createElement("div");
+    copy.innerHTML = curInnerHTML.substring(0, curInnerHTML.length - 1);
+    historyContainer.appendChild(copy);
+    recordCount++;
+    scrollEH("ArrowDown");
+  }
+
+  const inputEH = (e) => {
+    const key = e.key;
+    if (key.length === 1 && key.match(validKeys)) {
+      keyEH(key);
+    } else if (key === "ArrowUp" || key === "ArrowDown") {
+      scrollEH(key);
+    } else if (key === "Backspace") {
+      delEH();
+    } else if (key === "Enter") {
+
+    }
   };
 
   window.addEventListener("DOMContentLoaded", () => {
-    inputText.children[inputCount - childOffset].style.transform = `translate(3%, 0%) scale(1.1)`;
-    window.addEventListener("keydown", typingEH);
+    scrollEH("ArrowDown"); // temp
+    window.addEventListener("keydown", inputEH);
   });
 
   return module;
@@ -63,10 +96,19 @@ const index = (() => {
 
 /* 
 
-- i want the focus to increase in size and smoothly increase or decrease
-  as it enters focus
+- toggle everything back on
+- verify that things don't break
+- add displaying each keypress
+- add logic to remove oldest message
+
 - and have it finally add every valid keypress and ensure it doesn't
   break when i update the childCount
+
+  - add logic to have the cursor move to what you focus and if you type
+  - it removes everything at the bottom
+
+
+- create separate file for doing the logic of computing 
 
 - let's get the actual calculator logic working
 - let's address the error handling

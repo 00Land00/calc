@@ -51,6 +51,6 @@ body {
 }
 
 #cursor {
-  animation: blink 2s steps(2, start) infinite
+  animation: blink 1s steps(2, start) infinite
 }
 

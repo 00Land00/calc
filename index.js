@@ -3,6 +3,7 @@ const index = (() => {
 
   const module = {};
 
+  const historyCapacity = 15;
   const historyContainer = document.querySelector("#input");
 
   const validKeys = /[\d\*\+\-\/]/;
@@ -52,6 +53,18 @@ const index = (() => {
       scrollEH("ArrowDown");
     }
   }
+
+  const delAbove = () => {
+    if (recordCount > historyCapacity) {
+      const delId = 0;
+      for (let i = historyCapacity; i < recordCount; i++) {
+        const record = historyContainer.children[delId];
+        historyContainer.removeChild(record);
+      }
+      recordCount = historyCapacity;
+      scrollEH("ArrowDown");
+    }
+  };
   
   const keyEH = (key) => {
     delBelow();
@@ -61,6 +74,8 @@ const index = (() => {
     historyContainer.appendChild(copy);
     recordCount++;
     scrollEH("ArrowDown");
+
+    delAbove();
   };
 
   const delEH = () => {
@@ -71,6 +86,8 @@ const index = (() => {
     historyContainer.appendChild(copy);
     recordCount++;
     scrollEH("ArrowDown");
+
+    delAbove();
   }
 
   const inputEH = (e) => {
@@ -94,19 +111,7 @@ const index = (() => {
   return module;
 })();
 
-/* 
-
-- toggle everything back on
-- verify that things don't break
-- add displaying each keypress
-- add logic to remove oldest message
-
-- and have it finally add every valid keypress and ensure it doesn't
-  break when i update the childCount
-
-  - add logic to have the cursor move to what you focus and if you type
-  - it removes everything at the bottom
-
+/*
 
 - create separate file for doing the logic of computing 
 

@@ -27,6 +27,18 @@ body {
   font-size: 5rem;
 }
 
+#error {
+  position: absolute;
+  left:50vw;
+  top: calc(50vh + 6rem);
+  transform: translate(-50%, -50%);
+
+  color: red;
+  font-size: 3rem;
+
+  animation: blink 2s steps(2, start) infinite
+}
+
 #input {
   display: flex;
   flex-direction: column;
@@ -42,6 +54,7 @@ body {
 #input div {
   height: 5rem;
   transition: transform 0.1s;
+  white-space: nowrap;
 }
 
 @keyframes blink {

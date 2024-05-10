@@ -36,7 +36,9 @@ body {
   color: red;
   font-size: 3rem;
 
-  animation: blink 2s steps(2, start) infinite
+  animation: blink 2s steps(2, start) infinite;
+
+  visibility: hidden;
 }
 
 #input {
@@ -64,6 +66,6 @@ body {
 }
 
 #cursor {
-  animation: blink 1s steps(2, start) infinite
+  animation: blink 1s steps(2, start) infinite;
 }
 

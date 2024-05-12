@@ -3,13 +3,17 @@ const calculator = (() => {
 
   const module = {};
 
-  const computableForm = /^(\d*\.?\d+|\d+\.?\d*)[+\-*/](\d*\.?\d+|\d+\.?\d*)$/;
-  const validOperations = /[\*\+\-\/]/;
+  const computableForm =
+    /^(\-?\d*\.?\d+|\-?\d+\.?\d*)[+\-*/](\-?\d*\.?\d+|\-?\d+\.?\d*)$/;
+  const validDigit = /^(\-?\d*\.?\d+|\-?\d+\.?\d*)$/;
+  const validOperations = /[\*\+\-\/]/g;
 
   const errorObj = { computedValue: null, errorMsg: "SYNTAX ERROR" };
 
+  const roundTo = 4; // 4 decimal places
   const round = (num) => {
-    return Math.round((num + Number.EPSILON) * 100) / 100;
+    const factor = 10 ** roundTo;
+    return Math.round((num + Number.EPSILON) * factor) / factor;
   };
 
   const add = (x, y) => {
@@ -37,13 +41,27 @@ const calculator = (() => {
   };
 
   module.compute = (inputStr) => {
-    if (!computableForm.test(inputStr)) {
+    if (!computableForm.test(inputStr) && !validDigit.test(inputStr)) {
       return errorObj;
     }
 
-    const operandStrs = inputStr.split(validOperations);
-    const operator = inputStr.match(validOperations);
-    const operands = operandStrs.map((operand) => parseFloat(operand));
+    const curMetaRecord = recordIndex.getRecord().metaData;
+
+    const opFlag = curMetaRecord.opFlag;
+    if (!opFlag) {
+      return {
+        computedValue: inputStr,
+        errorMsg: ``,
+      };
+    }
+
+    const opIndex = curMetaRecord.pathList.findLastIndex((path) => path === "bp") - 1;
+    const operator = inputStr[opIndex];
+
+    const operands = [
+      parseFloat(inputStr.substring(0, opIndex)),
+      parseFloat(inputStr.substring(opIndex + 1, inputStr.length)),
+    ];
 
     if (operator === "+") {
       return add(operands[0], operands[1]);
